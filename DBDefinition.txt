@@ -1,0 +1,48 @@
+Users
+	UserID (PK)
+	CompanyID (FK_Users_Company_CompanyID)
+	FirstName
+	LastName
+	Email
+	Birthday
+	Address
+	Postalcode
+	City
+	Country
+	IsCompanyAccount
+	JoinDate (default value 'getdate()')
+	Disabled
+	Deleted
+
+Login
+	LoginID
+	UserID (FK_Login_Users_UserID)
+	Hash
+	Salt
+	FailedLoginTimes
+	LastLogin (default value 'getdate()')
+	
+Company
+	CompanyID
+	CompanyName
+	Email
+	VATCode
+	JoinDate
+	Disabled
+	Deleted
+	
+Discount
+	DiscountID
+	CompanyID (FK_Discount_Company_DiscountID)
+	DiscountName
+	Description
+	Amount
+	IsPercent
+	CountToCollect
+	CreateDate
+
+Stamps
+	StampID
+	DiscountID (FK_Stamps_Discount_DiscountID)
+	UserID     (FK_Stamps_Users_UserID)
+	TimeStamp
