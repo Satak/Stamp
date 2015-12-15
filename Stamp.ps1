@@ -177,11 +177,42 @@ param($UserID)
     return Invoke-MySQLQuery -Query $q
 }
 
+function Invoke-StampCount
+{
+param(
+$DiscountID,
+$CustomerID
+)
+
+    $q = "SELECT CountToCollect from Discount where DiscountID = $DiscountID"
+    $count = (Invoke-MySQLQuery -Query $q).Data.CountToCollect
+    $q = "SELECT count(*) as Stamps from stamps where DiscountID = $DiscountID AND UserID = $CustomerID"
+
+    if((Invoke-MySQLQuery -Query $q).Data.Stamps -ge $count)
+    {
+        return $true
+    }
+    
+    return $false
+}
+
 function Add-StampToCustomer
 {
-param($DiscountID,$CustomerID)
+param($Discount,$CustomerID)
 
-    $q = "INSERT INTO Stamps (DiscountID, UserID) VALUES ($DiscountID, $CustomerID)"
+    if(Invoke-StampCount -DiscountID $Discount.DiscountID -CustomerID $CustomerID)
+    {
+
+        Write-Output "User gained Stamp discount $($Discount.DiscountName) with benefit: $($Discount.Description)"
+
+        $q = "START TRANSACTION;
+              DELETE from Stamps WHERE DiscountID = $($Discount.DiscountID) AND UserID = $CustomerID;
+              INSERT INTO stampsused (UserID, DiscountID) VALUES ($CustomerID, $($Discount.DiscountID));
+              COMMIT;"
+        return Invoke-MySQLQuery -Query $q
+    }
+
+    $q = "INSERT INTO Stamps (DiscountID, UserID) VALUES ($($Discount.DiscountID), $CustomerID)"
     return Invoke-MySQLQuery -Query $q
 }
 
@@ -307,7 +338,7 @@ param($CompanyID)
 
     if(!(Invoke-Prompt -Title 'Give Stamp' -Message "Give Stamp to user '$($userFind.data.FirstName) $($userFind.data.LastName)' ID: $($userFind.data.UserID)"))
     {
-        Add-StampToCustomer -DiscountID $discount.DiscountID -CustomerID $userFind.Data.UserID
+        Add-StampToCustomer -Discount $discount -CustomerID $userFind.Data.UserID
         Write-Output "Stamp Added"
     }
     else

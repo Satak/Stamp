@@ -46,3 +46,13 @@ Stamps
 	DiscountID (FK_Stamps_Discount_DiscountID)
 	UserID     (FK_Stamps_Users_UserID)
 	TimeStamp
+	
+StampsUsed
+	StampsUsedID
+	UserID (FK_StampsUsed_Users_UserID)
+	DiscountID (FK_StampsUsed_Discount_DiscountID)
+	TimeStamp
+	
+	
+	
+	
