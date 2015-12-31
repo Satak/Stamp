@@ -21,7 +21,7 @@ Param(
 )
     $DBcon = [PSCustomObject]@{
         UN = 'bedd43df9a4244'
-        PW = '32a88716'
+        PW = 'x'
         DB = 'StampDB'
         Host = 'eu-cdbr-azure-north-d.cloudapp.net'
     }
